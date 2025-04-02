@@ -1,6 +1,7 @@
 import math
 import numpy as np
 import bisect
+from gui import windowInterface
 
 class maxFunctie:
     def decToBin(self, x):
@@ -239,16 +240,15 @@ class maxFunctie:
         evolutionLog.close()
 
 
-inputFile = open("input.txt", 'r')
-populationSize =        int(inputFile.readline().strip())
-left, right =           [float(x) for x in inputFile.readline().strip().split()]
-a,b,c =                 [int(x) for x in inputFile.readline().strip().split()]
-p =                     int(inputFile.readline().strip())
-crossoverProbability =  int(inputFile.readline().strip())
-mutationProbability =   int(inputFile.readline().strip())
-generationsNumber =     int(inputFile.readline().strip())
-inputFile.close()
+# inputFile = open("input.txt", 'r')
+# populationSize =        int(inputFile.readline().strip())
+# left, right =           [float(x) for x in inputFile.readline().strip().split()]
+# a,b,c =                 [int(x) for x in inputFile.readline().strip().split()]
+# p =                     int(inputFile.readline().strip())
+# crossoverProbability =  int(inputFile.readline().strip())
+# mutationProbability =   int(inputFile.readline().strip())
+# generationsNumber =     int(inputFile.readline().strip())
+# inputFile.close()
 
-algGen = maxFunctie(populationSize, left, right, a, b, c, p, crossoverProbability, mutationProbability, generationsNumber)
 
-algGen.evolve()
+gui = windowInterface(maxFunctie)
