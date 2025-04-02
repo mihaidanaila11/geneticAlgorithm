@@ -46,7 +46,7 @@ class maxFunctie:
         self.bitNumber = math.ceil(abs(math.log2((right-left)*(pow(10,p)))))
 
         # Maximul functiei
-        self.maxValue = float("-inf")
+        self.maxValue = float("-inf\n")
 
         def initPopulation(chromLen, chronNumber):
             bits = [str(int(x > 0.5)) for x in np.random.rand(chronNumber*chromLen)]
@@ -82,16 +82,19 @@ class maxFunctie:
     def getSelectionProbability(self, chromosome):
         return self.fitness(self.decodificare(chromosome)) / self.getTotalPerformance()
     
-    def _evolveHelper(self, printInfo = False):
+    def _evolveHelper(self, logFile, printInfo = False):
         # Afisam populatia initiala
         if printInfo:
-            print("Populatia initiala")
+            logFile.write("Populatia initiala\n")
             for i in range(self.populationSize):
-                print(f"{i+1}: {self.population[i]} x={self.decodificare(self.population[i])} f={self.fitness(self.decodificare(self.population[i]))}")
-            print()
+                logFile.write(f"{i+1}: {self.population[i]} x={self.decodificare(self.population[i])} f={self.fitness(self.decodificare(self.population[i]))}\n")
+            logFile.write("\n")
 
         # Lista de probabilitati
         selectionProbabilities = [self.getSelectionProbability(chromosome) for chromosome in self.population]
+        if printInfo:
+            for i in range(len(selectionProbabilities)):
+                logFile.write(f"cromozom {i+1} probabilitate {selectionProbabilities[i]}\n")
         
         # Calculam intervalele pentru selectie
         cumulativeProb = [0]
@@ -106,7 +109,8 @@ class maxFunctie:
                 bestChromosomeIndex = p
 
         if printInfo:
-            print(f"Cel mai bun cromozom este {bestChromosomeIndex+1}")       
+            logFile.write(f"Intervale probabilitati selectie\n{[float(x) for x in cumulativeProb]}\n") # Nu stiu cat de eficienta e conversia
+            logFile.write(f"Cel mai bun cromozom este {bestChromosomeIndex+1}\n")       
 
         # Procesul de selectie
         randomPicks = np.random.rand(self.populationSize-1)
@@ -118,25 +122,25 @@ class maxFunctie:
 
             # Il selectez
             if printInfo:
-                print(f"u = {u} selectam cromozomul {index}")
+                logFile.write(f"u = {u} selectam cromozomul {index}\n")
             selectii.append(self.population[index])
         if printInfo:
-            print()
+            logFile.write("\n")
 
-            print(f"Dupa selectie:")
+            logFile.write(f"Dupa selectie:\n")
             for i in range(self.populationSize):
-                print(f"{i+1}: {selectii[i]} x={self.decodificare(selectii[i])} f={self.fitness(self.decodificare(selectii[i]))}")
-            print()
+                logFile.write(f"{i+1}: {selectii[i]} x={self.decodificare(selectii[i])} f={self.fitness(self.decodificare(selectii[i]))}\n")
+            logFile.write("\n")
 
         # Procesul de incrucisare
         def crossover(chromosome1, chromosome2, index):
             if printInfo:
-                print(f"{chromosome1} {chromosome2} punct {index}")
+                logFile.write(f"{chromosome1} {chromosome2} punct {index}\n")
 
             result = (chromosome1[0:index] + chromosome2[index:], chromosome2[0:index] + chromosome1[index:])
 
             if printInfo:
-                print(f"rezultat {result[0]} {result[1]}")
+                logFile.write(f"rezultat {result[0]} {result[1]}\n")
 
             return result
         
@@ -146,12 +150,12 @@ class maxFunctie:
         indexChromosome1, indexChromosome2 = (None, None)
 
         if printInfo:
-            print(f"Probabilitatea de incrucisare {self.crossoverProb}")
+            logFile.write(f"Probabilitatea de incrucisare {self.crossoverProb}\n")
 
         for i in range(self.populationSize):
             if(indexChromosome1 and indexChromosome2):
                 if printInfo:
-                    print(f"recombinare dintre cromozomul {indexChromosome1} si cromozomul {indexChromosome2}:")
+                    logFile.write(f"recombinare dintre cromozomul {indexChromosome1} si cromozomul {indexChromosome2}:\n")
 
                 selectii[indexChromosome1], selectii[indexChromosome2] = crossover(selectii[indexChromosome1], 
                                                                                    selectii[indexChromosome2],
@@ -161,7 +165,7 @@ class maxFunctie:
 
             if(randomPicks[i] < self.crossoverProb):
                 if printInfo:
-                    print(f"{i+1}: {selectii[i]} u={randomPicks[i]} < {self.crossoverProb}")
+                    logFile.write(f"{i+1}: {selectii[i]} u={randomPicks[i]} < {self.crossoverProb} participa\n")
                 
                 if not indexChromosome1:
                     indexChromosome1 = i
@@ -169,18 +173,18 @@ class maxFunctie:
                     indexChromosome2 = i
             else:
                 if printInfo:
-                    print(f"{i+1}: {selectii[i]} u={randomPicks[i]}")
+                    logFile.write(f"{i+1}: {selectii[i]} u={randomPicks[i]}\n")
 
         if printInfo:
-            print()
+            logFile.write("\n")
 
-            print(f"Dupa recombinare:")
+            logFile.write(f"Dupa recombinare:\n")
             for i in range(self.populationSize):
-                print(f"{i+1}: {selectii[i]} x={self.decodificare(selectii[i])} f={self.fitness(self.decodificare(selectii[i]))}")
-            print()
+                logFile.write(f"{i+1}: {selectii[i]} x={self.decodificare(selectii[i])} f={self.fitness(self.decodificare(selectii[i]))}\n")
+            logFile.write("\n")
 
         #mutatie
-            print(f"Probabilitatea de mutatie penntru fiecare gena {self.mutationProb}")
+            logFile.write(f"Probabilitatea de mutatie penntru fiecare gena {self.mutationProb}\n")
 
         # Varianta 2 de recombinare
         randomPicks = np.random.rand(self.populationSize * self.bitNumber)
@@ -196,42 +200,55 @@ class maxFunctie:
 
             if modifiedFlag:
                 if printInfo:
-                    print(f"A fost modificat cromozomul {chromosomeIndex+1}")
+                    logFile.write(f"A fost modificat cromozomul {chromosomeIndex+1}\n")
                 selectii[chromosomeIndex] = "".join(modifiedChromosome)
 
         if printInfo:
-            print(f"Dupa mutatie:")
+            logFile.write(f"Dupa mutatie:\n")
+
+        self.fitnessSum = 0
         for i in range(self.populationSize):
             fitness = self.fitness(self.decodificare(selectii[i]))
+            self.fitnessSum += fitness
             
             # Pastram valoarea maxima a functiei gasita pana la generatia curenta
             if self.maxValue < fitness:
                 self.maxValue = fitness
 
             if printInfo: 
-                print(f"{i+1}: {selectii[i]} x={self.decodificare(selectii[i])} f={fitness}")
+                logFile.write(f"{i+1}: {selectii[i]} x={self.decodificare(selectii[i])} f={fitness}\n")
         if printInfo:       
-            print()
+            logFile.write("\n")
         
         self.population = selectii
 
         
     def evolve(self):
-        self._evolveHelper(printInfo = True)
+        evolutionLog = open("evolutie.txt", "w")
+        self._evolveHelper(evolutionLog, printInfo = True)
         
-        print("Evolutia maximului:")
-        print(self.maxValue)
+        evolutionLog.write("Evolutia maximului:\n")
+        evolutionLog.write(f"Max fitness: {self.maxValue}\n")
+        evolutionLog.write(f"Fitness Mean: {self.fitnessSum / self.populationSize}\n\n")
 
         for _ in range(self.generationsNumber - 1):
-            self._evolveHelper(printInfo = False)
-            print(self.maxValue)
+            self._evolveHelper(evolutionLog, False)
+            evolutionLog.write(f"Max fitness: {self.maxValue}\n")
+            evolutionLog.write(f"Fitness Mean: {self.fitnessSum / self.populationSize}\n\n")
+
+        evolutionLog.close()
 
 
+inputFile = open("input.txt", 'r')
+populationSize =        int(inputFile.readline().strip())
+left, right =           [float(x) for x in inputFile.readline().strip().split()]
+a,b,c =                 [int(x) for x in inputFile.readline().strip().split()]
+p =                     int(inputFile.readline().strip())
+crossoverProbability =  int(inputFile.readline().strip())
+mutationProbability =   int(inputFile.readline().strip())
+generationsNumber =     int(inputFile.readline().strip())
+inputFile.close()
 
-    
-
-algGen = maxFunctie(20, -1, 2, -1, 1, 2, 6, 25, 1, 50)
-
-populatie = [int(binary, 2) for binary in algGen.population]
+algGen = maxFunctie(populationSize, left, right, a, b, c, p, crossoverProbability, mutationProbability, generationsNumber)
 
 algGen.evolve()
