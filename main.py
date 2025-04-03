@@ -49,12 +49,12 @@ class maxFunctie:
         # Maximul functiei
         self.maxValue = float("-inf\n")
 
-        def initPopulation(chromLen, chronNumber):
-            bits = [str(int(x > 0.5)) for x in np.random.rand(chronNumber*chromLen)]
+        def initPopulation(chromLen, chromNumber):
+            bits = [str(int(x > 0.5)) for x in np.random.rand(chromNumber*chromLen)]
 
             population = []
 
-            for i in range(chronNumber):
+            for i in range(chromNumber):
                 population.append("".join(bits[i * chromLen : i * chromLen + chromLen]))
 
             return population
