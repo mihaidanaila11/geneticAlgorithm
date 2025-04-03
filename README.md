@@ -26,13 +26,8 @@ The genetic algorithm performs the following steps:
 
 
 - **evolutie.txt**  
-  The log file produced by the genetic algorithm, which contains information such as the initial population, selection details, crossover events, mutations, and evolution of fitness values across generations.
+  The log file produced by the genetic algorithm which contains information such as the initial population, selection details, crossover events, mutations, and evolution of fitness values across generations.
 
-- **README.md**  
-  This file.
-
-- **__pycache__/**  
-  Directory containing Python bytecode cache files.
 
 ## Requirements
 
